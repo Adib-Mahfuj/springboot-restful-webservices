@@ -3,6 +3,7 @@ package net.javaguides.springboot_restful_webservices.service.impl;
 import lombok.AllArgsConstructor;
 import net.javaguides.springboot_restful_webservices.dto.UserDto;
 import net.javaguides.springboot_restful_webservices.entity.User;
+import net.javaguides.springboot_restful_webservices.exception.EmailAlreadyExistsException;
 import net.javaguides.springboot_restful_webservices.exception.ResourceNotFoundException;
 import net.javaguides.springboot_restful_webservices.mapper.AutoUserMapper;
 import net.javaguides.springboot_restful_webservices.mapper.UserMapper;
@@ -26,6 +27,12 @@ public class UserServiceImpl implements UserService {
         //Convert UserDto into User Jpa entity
         //User user = UserMapper.maptoUser(userDto);
         //User user = modelMapper.map(userDto,User.class);
+
+        Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
+        if (optionalUser.isPresent())
+        {
+            throw new EmailAlreadyExistsException("Email Already Exists For User!");
+        }
 
         User user = AutoUserMapper.MAPPER.mapToUser(userDto);
         User savedUser = userRepository.save(user);
